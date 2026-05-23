@@ -1,4 +1,23 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rag_app
+    working_dir: /app
+    env_file:
+      - .env
+    environment:
+      PDF_PATH: ${PDF_PATH_CONTAINER:-/app/document.pdf}
+    volumes:
+      - ./:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      bootstrap_vector_ext:
+        condition: service_completed_successfully
+    command: ["sleep", "infinity"]
+
   postgres:
     image: pgvector/pgvector:pg17
     container_name: postgres_rag
